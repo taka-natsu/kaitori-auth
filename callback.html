@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>ログイン中…</title>
+<style>body{font-family:sans-serif;padding:40px;color:#222;background:#fff}</style>
+</head>
+<body>
+<p id="msg">ダッシュボードに戻っています…</p>
+<script>
+// Discord ログインの中継ページ（GitHub Pages に置く。ソースは kaitori_price_checker/web/oauth_relay/callback.html）
+// 予備の Cloudflare quick tunnel は URL が起動ごとに変わり Discord に登録できないため、このページを redirect_uri にし、
+// state の末尾（"~ホスト名"）に書かれたダッシュボードへ code と state をそのまま渡す。
+// 転送先は *.trycloudflare.com に限る（それ以外へは転送しない）。
+(function () {
+  var q = location.search;
+  var state = new URLSearchParams(q).get('state') || '';
+  var host = state.indexOf('~') >= 0 ? state.slice(state.lastIndexOf('~') + 1) : '';
+  if (/^[a-z0-9-]+\.trycloudflare\.com$/.test(host)) {
+    location.replace('https://' + host + '/auth/callback' + q);
+  } else {
+    document.getElementById('msg').textContent = 'ログイン先が分かりませんでした。ダッシュボードのURLから開き直してください。';
+  }
+})();
+</script>
+</body>
+</html>
