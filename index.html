@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>買取ダッシュボード</title>
+<style>body{font-family:sans-serif;padding:40px;color:#222;background:#fff}</style>
+</head>
+<body>
+<p id="msg">ダッシュボードに移動しています…</p>
+<script>
+// ブックマーク用の入口（GitHub Pages。ソースは kaitori_price_checker/web/oauth_relay/index.html）
+// 今使える公開トンネル（ngrok か予備の Cloudflare）の URL を current.json から読んで転送する。
+// current.json は run_watchdog / web/tunnel_discord.py が切り替えのたびに書き換える。
+(function () {
+  var msg = document.getElementById('msg');
+  fetch('current.json?t=' + Date.now(), {cache: 'no-store'})
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      var u = d && d.url || '';
+      if (/^https:\/\/([a-z0-9-]+\.trycloudflare\.com|[a-z0-9-]+\.ngrok-free\.(dev|app))$/.test(u)) {
+        location.replace(u + '/');
+      } else {
+        msg.textContent = 'ダッシュボードのURLが見つかりませんでした。しばらくしてから開き直してください。';
+      }
+    })
+    .catch(function () { msg.textContent = 'ダッシュボードのURLを読み込めませんでした。しばらくしてから開き直してください。'; });
+})();
+</script>
+</body>
+</html>
